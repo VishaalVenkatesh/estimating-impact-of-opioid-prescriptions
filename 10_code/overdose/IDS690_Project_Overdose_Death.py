@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 
-# 1. merging 10 US vital data sets and cleaning
+# 1. merging 10 US vital data sets and cleaning for final data set
 
 # In[262]:
 

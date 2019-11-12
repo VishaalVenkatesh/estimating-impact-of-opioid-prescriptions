@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[261]:
+# In[82]:
 
 
 import pandas as pd
@@ -10,7 +10,7 @@ import numpy as np
 
 # 1. merging 10 US vital data sets and cleaning
 
-# In[262]:
+# In[83]:
 
 
 df1 = pd.read_csv("Underlying Cause of Death, 2006.txt",  delimiter="\t")
@@ -25,7 +25,7 @@ df9 = pd.read_csv("Underlying Cause of Death, 2014.txt",  delimiter="\t")
 df10 = pd.read_csv("Underlying Cause of Death, 2015.txt",  delimiter="\t")
 
 
-# In[263]:
+# In[84]:
 
 
 # merged 10 data sets
@@ -34,13 +34,13 @@ df=[df1,df2,df3, df4, df5, df6, df7, df8, df9, df10]
 df_new=pd.concat(df)
 
 
-# In[264]:
+# In[85]:
 
 
 df_new.head()
 
 
-# In[265]:
+# In[86]:
 
 
 #split state and county name
@@ -50,20 +50,20 @@ df_new['County']=temp[0]
 df_new['State']=temp[1]
 
 
-# In[266]:
+# In[87]:
 
 
 df_new['Drug/Alcohol Induced Cause'].unique()
 
 
-# In[267]:
+# In[88]:
 
 
 #select 'Drug poisonings (overdose) Unintentional (X40-X44)', 'Drug poisonings (overdose) Undetermined (Y10-Y14)', 'Drug poisonings (overdose) Suicide (X60-X64)'
 df_death=df_new.loc[df_new['Drug/Alcohol Induced Cause'].isin(['Drug poisonings (overdose) Unintentional (X40-X44)', 'Drug poisonings (overdose) Undetermined (Y10-Y14)', 'Drug poisonings (overdose) Suicide (X60-X64)'])]
 
 
-# In[268]:
+# In[89]:
 
 
 #reorder col names
@@ -74,7 +74,7 @@ columnsTitles = ['Notes', 'State', 'County', 'County Code', 'Year', 'Year Code',
 df_death = df_death.reindex(columns=columnsTitles).copy()
 
 
-# In[269]:
+# In[90]:
 
 
 #drop useless cols
@@ -82,22 +82,29 @@ df_death = df_death.reindex(columns=columnsTitles).copy()
 df_death=df_death.drop(["Notes", "Year Code", "Drug/Alcohol Induced Cause Code"],axis=1 )
 
 
-# In[270]:
+# In[91]:
 
 
 df_death.head()
 
 
-# In[271]:
+# In[92]:
+
+
+df_death
+
+
+# In[93]:
 
 
 #cleaning missing value
-
+df_death['State']=df_death['State'].astype(str)
+df_death['County']=df_death['County'].astype(str)
 df_death['Deaths']=df_death['Deaths'].astype(str)
 df_death= df_death[~df_death['Deaths'].str.contains("Missing")]
 
 
-# In[272]:
+# In[94]:
 
 
 #change data type
@@ -106,115 +113,66 @@ df_death['County Code']=df_death['County Code'].astype(int)
 df_death['Year']=df_death['Year'].astype(int)
 
 
-# In[273]:
+# In[95]:
 
 
 df_death['Deaths']=pd.to_numeric(df_death['Deaths'], downcast='integer')
 
 
-# In[274]:
+# In[96]:
 
 
 df_death.head()
 
 
-# In[ ]:
-
-
-
-
-
 # 2. population data cleaning
 
-# In[275]:
+# In[97]:
 
 
-df2= pd.read_csv("pop_counties_20062012.csv")
+df2= pd.read_excel("PopulationReport.xlsx")
 
 
-# In[276]:
+# In[98]:
 
 
 df2.head()
 
 
-# In[277]:
+# In[99]:
 
 
-#split state and county name, and cleaning
-
-temp=df2['NAME'].str.split(",",expand=True)
-df2['County']=temp[0]
-df2['State']=temp[1]
-
-
-# In[278]:
-
-
-df2 =df2.drop(["BUYER_COUNTY", "STATE", "COUNTY", "NAME", "variable", 'State', 'county_name'],axis=1 )
-
-
-# In[279]:
-
-
-df2.rename(columns = {'year':'Year', 'countyfips':'County Code', 'BUYER_STATE':'State' }, inplace = True)
-
-
-# In[280]:
-
-
-df2=df2.dropna(axis=0, how='any')
-
-
-# In[ ]:
-
-
-
+df2.rename(columns = {'County Name':'County'}, inplace = True)
+df2['State']=df2['State'].astype(str)
+df2['County']=df2['County'].astype(str)
+df2['pop2010']=df2['pop2010'].astype(int)
 
 
 # 3. Final data set
 
-# In[281]:
+# In[123]:
 
 
 #merging df_death and df2 to get final data set
 
-df_final=pd.merge(df_death, df2, how='inner', on=['County Code', 'Year'])
+df_final=pd.merge(df_death, df2, how=inner, on=['State', 'County'])
 
 
-# In[282]:
+# In[124]:
 
 
-df_final['population']=df_final['population'].astype(int)
+df_final
 
 
-# In[283]:
-
-
-df_final=df_final.drop(["State_y", "County_y"],axis=1 )
-
-
-# In[284]:
-
-
-df_final.rename(columns = {'State_x':'State', 'County_x':'County'}, inplace = True)
-
-
-# In[285]:
-
-
-df_final.head()
-
-
-# In[286]:
+# In[26]:
 
 
 #Death rate Calculation
 
-df_final['Death Rate']=df_final['Deaths']/df_final['population']
+df_final['Death Rate']=df_final['Deaths']/df_final['pop2010']
 
 
-# In[287]:
+# In[27]:
 
 
 df_final.head()

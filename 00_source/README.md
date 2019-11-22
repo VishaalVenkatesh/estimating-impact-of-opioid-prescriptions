@@ -1,6 +1,6 @@
 # Where did we get our raw data from?
 
-The following are the sources for all the raw data we have used in this analysis. 
+The following are the sources for all the raw data we have used in this analysis. Some of this data was pretty large and could not be directly maintained on Git. We have therefore provided the links to the original sources where we obtained all our data from.
 
 ## 1.	Dataset on Reporting to the US Drug Enforcement Agency (DEA):
 
@@ -13,7 +13,7 @@ https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pil
 •	PERIOD: This column will be calculated based on pre and the post periods. 0 for pre and 1 for post. 
 •	POLICY STATE: This will tell us if the state has and opioid policy enforced. This will be based on the “BUYER_STATE” column in the data. 
 
-## 2.	Population Data from the US Census – POPULATION:
+## 2.	Population Data from the US Census :
 
 https://data.ers.usda.gov/reports.aspx?ID=17827&AspxAutoDetectCookieSupport=1
 

@@ -2,11 +2,15 @@
 
 The following are the sources for all the raw data we have used in this analysis. Some of this data was pretty large and could not be directly maintained on Git. We have therefore provided the links to the original sources where we obtained all our data from.
 
+Our goal dataframe was:
+
+
+
 ## 1.	Dataset on Reporting to the US Drug Enforcement Agency (DEA):
 
 https://www.washingtonpost.com/national/2019/07/18/how-download-use-dea-pain-pills-database/?arc404=true
 
-•	We will use the Washington Post version of the dataset. This dataset includes data on only two opioids – Hydrocodone & Oxycodone. These opioids however account for more than 75% of opioids prescribed. 
+•	We will use the Washington Post version of the dataset. This dataset includes data on over 380 million opiod transactions across the United States.
 
 •	The COUNTY and STATE columns in the goal dataset would be gotten from the BUYER_COUNTY and BUYER_STATE columns. 
 

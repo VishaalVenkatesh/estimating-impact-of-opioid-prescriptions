@@ -175,6 +175,7 @@ df_final=pd.merge(df_death, df2, how='inner', on=['State', 'County'])
 
 
 #Death rate Calculation by county
+#add ploicy state
 
 df_final['Death_Rate']=df_final['Deaths']/df_final['pop2010']
 
@@ -187,45 +188,50 @@ df_final['Policy_State']=np.where((df_final['State']=='WA') | (df_final['State']
 df_final.head()
 
 
-# In[64]:
+# In[100]:
 
 
-df_final_FL=df_final[(df_final['State']!='TX') | (df_final['State']=='WA') ]
+#FL and non policy state
+df_final_FL=df_final[(df_final['State']!='TX') & (df_final['State']!='WA') ]
 df_final_FL['Post']=np.where(df_final_FL['Year']<2010,0,1)
 df_final_FL['Year_C']=df_final_FL['Year']-2010
 
 
-# In[65]:
+# In[101]:
 
 
 df_final_FL
 
 
-# In[66]:
+# In[102]:
 
 
-df_final_TX=df_final[(df_final['State']!='FL') | (df_final['State']=='WA') ]
+#TX and non policy state
+df_final_TX=df_final[(df_final['State']!='FL') & (df_final['State']!='WA') ]
 df_final_TX['Post']=np.where(df_final_TX['Year']<2007,0,1)
 df_final_TX['Year_C']=df_final_TX['Year']-2007
 
 
-# In[67]:
+# In[104]:
 
 
-df_final_WA=df_final[(df_final['State']!='TX') | (df_final['State']=='FL') ]
+#WA and non policy state
+df_final_WA=df_final[(df_final['State']!='TX') & (df_final['State']!='FL') ]
 df_final_WA['Post']=np.where(df_final_WA['Year']<2011,0,1)
 df_final_WA['Year_C']=df_final_WA['Year']-2011
 
 
-# In[68]:
+# In[105]:
 
 
+#only FL
 df_FL=df_final[(df_final['State']=='FL')]
 
 
-# In[90]:
+# In[106]:
 
 
+#FL prepost
 fig_FL=(ggplot(aes(x='Year', y='Death_Rate', group = 'State', color = 'State') , data = df_FL) +
         geom_point() +geom_smooth(method='lm', data=df_FL[df_FL['Year']<2010], color='blue') +
         geom_smooth(method='lm', data=df_FL[df_FL['Year']>=2010], color='red') + geom_vline(xintercept=2010, linetype = "dotted") + 
@@ -236,15 +242,17 @@ fig_FL.save("prepost_FL.pdf")
 fig_FL
 
 
-# In[70]:
+# In[107]:
 
 
+#only TX
 df_TX=df_final[(df_final['State']=='TX')]
 
 
-# In[92]:
+# In[108]:
 
 
+#TX prepost
 fig_TX=(ggplot(aes(x='Year', y='Death_Rate', group = 'State', color = 'State') , data = df_TX) +geom_point() +geom_smooth(method='lm', data=df_TX[df_TX['Year']<2007], color='blue') +
         geom_smooth(method='lm', data=df_TX[df_TX['Year']>=2007], color='red') + geom_vline(xintercept=2007, linetype = "dotted") + 
         xlim(2006, 2014)+
@@ -254,15 +262,17 @@ fig_TX.save("prepost_TX.pdf")
 fig_TX
 
 
-# In[72]:
+# In[109]:
 
 
+#only WA
 df_WA=df_final[(df_final['State']=='WA')]
 
 
-# In[94]:
+# In[110]:
 
 
+#WA prepost
 fig_WA=(ggplot(aes(x='Year', y='Death_Rate', group = 'State', color = 'State') , data = df_WA) + geom_smooth(method='lm', data=df_WA[df_WA['Year']<2011], color='blue')+ 
         geom_smooth(method='lm', data=df_WA[df_WA['Year']>=2011], color='red')+
         geom_point() + geom_vline(xintercept=2011, linetype = "dotted") + xlim(2008, 2014)+
@@ -274,6 +284,7 @@ fig_WA
 # In[96]:
 
 
+#DID WA and non-policy state
 fig_WA =(ggplot(df_final, aes(x='Year',y ='Death_Rate', color='Policy_State'))
       + geom_smooth(df_final[(df_final['State'] != 'FL')& (df_final['State'] !='TX') & 
                              (df_final['State'] !='WA')& (df_final['Year']<2011) ], method = 'lm')
@@ -290,6 +301,7 @@ fig_WA
 # In[97]:
 
 
+#DID FL and non-policy state
 fig_FL =(ggplot(df_final, aes(x='Year',y ='Death_Rate', color='Policy_State'))
       + geom_smooth(df_final[(df_final['State'] != 'FL')& (df_final['State'] !='TX') & 
                              (df_final['State'] !='WA')& (df_final['Year']<2010) ], method = 'lm')
@@ -306,6 +318,7 @@ fig_FL
 # In[98]:
 
 
+#DID TX and non-policy state
 fig_TX =(ggplot(df_final, aes(x='Year',y ='Death_Rate', color='Policy_State'))
       + geom_smooth(df_final[(df_final['State'] != 'FL')& (df_final['State'] !='TX') & 
                              (df_final['State'] !='WA')& (df_final['Year']<2007) ], method = 'lm')

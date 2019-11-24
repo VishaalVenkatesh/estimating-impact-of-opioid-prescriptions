@@ -2,7 +2,6 @@
 import pandas as pd
 import numpy as np
 
-
 states =  ["AL", "AK",  "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", 
            "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
            "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
@@ -10,59 +9,31 @@ states =  ["AL", "AK",  "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
            "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 
 #Dataset prep for Florida
-for state in states:
-    df = pd.read_pickle("/Users/abhirajvinnakota/Desktop/Project/"+str(state)+".pkl") #reading state level data for opioids
-    df["TRANSACTION_DATE"] = df["TRANSACTION_DATE"].astype('str').str.zfill(8) #Pre-fixed 0 for the strings with 7 digits
+for state in states:  
+    df = pd.read_pickle("/Users/abhirajvinnakota/Desktop/Project/new_data/abhiraj_data/"+ state + ".pkl") #reading state level data for opioids
     df["TRANSACTION_DATE"] = pd.to_datetime(df["TRANSACTION_DATE"], format = "%m%d%Y") #converting to datetime format
-    df["Year"] = df["TRANSACTION_DATE"].dt.to_period('Y') #extracting year
-    df = df[(df["Year"] >= 2008) & (df["Year"] <= 2012)] #filtered for the required years
-    df['CALC_BASE_WT_IN_GM'] = df['CALC_BASE_WT_IN_GM'].astype('float') #changing dtype from string to float
-    df['opioids'] = np.multiply(df['CALC_BASE_WT_IN_GM'],df['MME_Conversion_Factor']) #opioids calculation
+    df["Year"] = df["TRANSACTION_DATE"].dt.year #extracting year
+    df['opioids'] = df['CALC_BASE_WT_IN_GM'] * df['MME_Conversion_Factor']
     df = df.reset_index() #reseting indicies
     df = df.drop(['CALC_BASE_WT_IN_GM','TRANSACTION_DATE','DRUG_NAME','MME_Conversion_Factor','index'], axis = 1) #dropping columns 
     df = df.rename({"BUYER_STATE":"STATE","BUYER_COUNTY":"COUNTY"}, axis=1) #renaming columns 
-    df['opioids_sum'] = df.groupby(['STATE','COUNTY','Year'])['opioids'].transform(sum) #summing opioids at a yearly level
-    df = df.drop(['opioids'], axis = 1) #dropping the opioids column
-    df.drop_duplicates(inplace=True) #dropping duplicate value to get to the final data set
-    pd.to_pickle(df,'/Users/abhirajvinnakota/Desktop/Project/processed_data/florida/'+str(state)+'.pkl' ) #writing to disk
+    df = df.groupby(['STATE','COUNTY','Year'],as_index=False).sum() #summing opioids at a yearly level
+    pd.to_pickle(df,'/Users/abhirajvinnakota/Desktop/estimating-impact-of-opioid-prescription-regulations-team-6/20_intermediate_files/10_opioids_analysis/20_state_level_data_from_20/florida/'+state+'.pkl' ) #writing to disk
 
-    
 
-#Dataset prep for Texas
-for state in states:
-    df = pd.read_pickle("/Users/abhirajvinnakota/Desktop/Project/"+str(state)+".pkl") #reading state level data for opioids
-    df["TRANSACTION_DATE"] = df["TRANSACTION_DATE"].astype('str').str.zfill(8) #Pre-fixed 0 for the strings with 7 digits
+
+#Dataset prep for Texas & Washington
+for state in states:  
+    df = pd.read_pickle("/Users/abhirajvinnakota/Desktop/Project/new_data/abhiraj_data/"+ state + ".pkl") #reading state level data for opioids
     df["TRANSACTION_DATE"] = pd.to_datetime(df["TRANSACTION_DATE"], format = "%m%d%Y") #converting to datetime format
-    df["Year"] = df["TRANSACTION_DATE"].dt.to_period('Y') #extracting year
-    df["Month"] = df["TRANSACTION_DATE"].dt.to_period('M') #extracting month
-    df = df[(df["Year"] >= 2006) & (df["Year"] <= 2008)] #filtered for the required years
-    df['CALC_BASE_WT_IN_GM'] = df['CALC_BASE_WT_IN_GM'].astype('float') #changing dtype from string to float
-    df['opioids'] = np.multiply(df['CALC_BASE_WT_IN_GM'],df['MME_Conversion_Factor']) #opioids calculation
+    df["Year"] = df["TRANSACTION_DATE"].dt.year #extracting year
+    df["Month"] = df["TRANSACTION_DATE"].dt.month #extracting month
+    df['opioids'] = df['CALC_BASE_WT_IN_GM'] * df['MME_Conversion_Factor']
     df = df.reset_index() #reseting indicies
     df = df.drop(['CALC_BASE_WT_IN_GM','TRANSACTION_DATE','DRUG_NAME','MME_Conversion_Factor','index'], axis = 1) #dropping columns 
     df = df.rename({"BUYER_STATE":"STATE","BUYER_COUNTY":"COUNTY"}, axis=1) #renaming columns 
-    df['opioids_sum'] = df.groupby(['STATE','COUNTY','Year','Month'])['opioids'].transform(sum) #summing opioids at a yearly level
-    df = df.drop(['opioids'], axis = 1) #dropping the opioids column
-    df.drop_duplicates(inplace=True) #dropping duplicate value to get to the final data set
-    pd.to_pickle(df,'/Users/abhirajvinnakota/Desktop/Project/processed_data/texas/'+str(state)+'.pkl' ) #writing to disk
+    df = df.groupby(['STATE','COUNTY','Year','Month'],as_index=False).sum() #summing opioids at a yearly level
+    df.head()
+    pd.to_pickle(df,'/Users/abhirajvinnakota/Desktop/estimating-impact-of-opioid-prescription-regulations-team-6/20_intermediate_files/10_opioids_analysis/20_state_level_data_from_20/texas_wash/'+state+'.pkl' ) #writing to disk
 
-
-
-#Dataset prep for Washington
-for state in states:
-    df = pd.read_pickle("/Users/abhirajvinnakota/Desktop/Project/"+str(state)+".pkl") #reading state level data for opioids
-    df["TRANSACTION_DATE"] = df["TRANSACTION_DATE"].astype('str').str.zfill(8) #Pre-fixed 0 for the strings with 7 digits
-    df["TRANSACTION_DATE"] = pd.to_datetime(df["TRANSACTION_DATE"], format = "%m%d%Y") #converting to datetime format
-    df["Year"] = df["TRANSACTION_DATE"].dt.to_period('Y') #extracting year
-    df["Month"] = df["TRANSACTION_DATE"].dt.to_period('M') #extracting month
-    df = df[(df["Year"] >= 2010) & (df["Year"] <= 2012)] #filtered for the required years
-    df['CALC_BASE_WT_IN_GM'] = df['CALC_BASE_WT_IN_GM'].astype('float') #changing dtype from string to float
-    df['opioids'] = np.multiply(df['CALC_BASE_WT_IN_GM'],df['MME_Conversion_Factor']) #opioids calculation
-    df = df.reset_index() #reseting indicies
-    df = df.drop(['CALC_BASE_WT_IN_GM','TRANSACTION_DATE','DRUG_NAME','MME_Conversion_Factor','index'], axis = 1) #dropping columns 
-    df = df.rename({"BUYER_STATE":"STATE","BUYER_COUNTY":"COUNTY"}, axis=1) #renaming columns 
-    df['opioids_sum'] = df.groupby(['STATE','COUNTY','Year','Month'])['opioids'].transform(sum) #summing opioids at a yearly level
-    df = df.drop(['opioids'], axis = 1) #dropping the opioids column
-    df.drop_duplicates(inplace=True) #dropping duplicate value to get to the final data set
-    pd.to_pickle(df,'/Users/abhirajvinnakota/Desktop/Project/processed_data/washington/'+str(state)+'.pkl' ) #writing to disk
 

@@ -1,0 +1,24 @@
+states =  ["AL", "AK",  "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", 
+          "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
+          "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
+          "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
+          "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+
+import pandas as pd
+import numpy as np
+
+for state in states:
+    chunks = []
+    df_cols = pd.read_csv('D://Data//arcos_all.tsv//arcos_all.tsv', 
+                          delimiter='\t', 
+                          usecols=['BUYER_STATE','BUYER_COUNTY','TRANSACTION_DATE',
+                                   'CALC_BASE_WT_IN_GM','MME_Conversion_Factor','DRUG_NAME'], 
+                          encoding='utf-8',
+                          iterator=True)
+    for df in df_cols: 
+        df = df[(df['DRUG_NAME']=='OXYCODONE') | (df['DRUG_NAME']=='HYDROCODONE')]
+        df = df[df.BUYER_STATE == state]
+        chunks.append(df)
+    my_state = pd.concat(chunks)
+    my_state.to_parquet('D://Data//arcos_all.tsv//'+str(state)+'.parquet')
+
